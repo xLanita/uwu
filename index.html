@@ -1,1 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inori Space</title>
+    
+    <!-- ========== ENLACES A RECURSOS EXTERNOS ========== -->
+    <!-- CSS personalizado (puede estar roto) -->
+    <link href="https://solrainha.github.io/honeybee/honeybee.css" rel="stylesheet">
+    <!-- Fuentes de Google -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:500,700&display=swap" rel="stylesheet">
+    <!-- Iconos de Material Design -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- ========== SCRIPTS EXTERNOS ========== -->
+    <!-- jQuery (versión antigua 1.10.2) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- Reproductor de música personalizado (almacenado en Dropbox) -->
+    <script src="https://dl.dropbox.com/s/brdv4yv2iaigjmp/glenplayer07.js"></script>
+    
+    <!-- ========== SCRIPT DE PROTECCIÓN BÁSICA ========== -->
+    <!-- Deshabilita clic derecho y teclas contextuales -->
+    <script type="text/javascript">
+        document.onkeydown = function(){return false};
+        document.oncontextmenu = function(){return false};
+    </script>
+    
+    <!-- ========== SCRIPT PARA AJUSTAR VIDEOS ========== -->
+    <!-- (No se utiliza en este código, pero está presente) -->
+    <script>
+        $(document).ready(function(){
+            $('.video iframe').each(function(){
+                var scale = $(this).parents('.video').width() / 500;
+                $(this).attr({
+                    width: Math.floor($(this).attr('width') * scale),
+                    height: Math.floor($(this).attr('height') * scale)
+                });
+            });
+        });
+    </script>
+    
+    <!-- ========== ESTILOS CSS PERSONALIZADOS ========== -->
+    <style type="text/css">
+        /* ========== CONFIGURACIÓN GLOBAL ========== */
+        /* Variables CSS para personalización fácil */
+        :root {
+            --Circle-Size: 50px;                    /* Tamaño del reproductor circular */
+            --Progress-Border-Size: 2px;            /* Grosor del borde del progreso */
+            --Progress-Empty: #eee;                 /* Color del círculo vacío */
+            --Progress-Fill: #665588;               /* Color del progreso (morado) */
+            --Player-Background: #fdcae1;           /* Fondo del botón play (rosa) */
+            --Play-Pause-Buttons-Size: 20px;        /* Tamaño de iconos play/pause */
+            --Play-Pause-Buttons-Color: #fff;       /* Color de iconos play/pause */
+            --Player-Text-Margin: 9.5px;            /* Margen del texto del reproductor */
+            --Song-Name-Font-Size: 9.5px;           /* Tamaño del nombre de la canción */
+            --Song-Name-Color: #fdcae1;             /* Color del nombre de la canción */
+            --Artist-Name-Font-Size: 9.5px;         /* Tamaño del nombre del artista */
+            --Artist-Name-Color: #665588;           /* Color del nombre del artista */
+        }
+        
+        /* Fuente personalizada "Creo" */
+        @font-face {
+            font-family: "creo";
+            src: url('https://dl.dropboxusercontent.com/s/uk7fcayvza8gd9t/Creo-ExtraBold.ttf');
+        }
+        
+        /* ========== ESTILOS GENERALES ========== */
+        body {
+            background-color: #ededed;              /* Fondo gris claro */
+            font-family: 'Montserrat', sans-serif;  /* Fuente principal */
+            color: #3c3c3c;                         /* Color de texto gris oscuro */
+            letter-spacing: 1px;                    /* Espaciado entre letras */
+            color: #665588;                         /* Color morado (sobrescribe al anterior) */
+            font-size: 9px;                         /* Tamaño de fuente pequeño */
+            font-weight: 500;                       /* Peso de fuente medio */
+        }
+        
+        /* Cursor personalizado para toda la página */
+        *, body, img {
+            cursor: url(https://i.imgur.com/TicQTrZ.png), auto;
+        }
+        
+        /* ========== ESTILOS DE TEXTO Y ENLACES ========== */
+        /* Enlaces normales */
+        a:link, a:active, a:visited {
+            color: #92879a;                         /* Color morado grisáceo */
+            text-decoration: none;                  /* Sin subrayado */
+            -webkit-transition: all 0.2s linear;    /* Transición suave */
+            -moz-transition: all 0.2s linear;
+            transition: all 0.2s linear;
+            text-transform: uppercase;              /* Texto en mayúsculas */
+            font-weight: bold;                      /* Texto en negrita */
+        }
+        
+        /* Enlaces al pasar el mouse */
+        a:hover {
+            color: ;                                /* Color vacío (mantiene el mismo) */
+            -webkit-transition: all 0.2s linear;    /* Transición suave */
+            -moz-transition: all 0.2s linear;
+            transition: all 0.2s linear;
+        }
+        
+        /* Elementos en negrita */
+        b, bold, strong {
+            color: #665588;                         /* Color morado */
+            text-transform: uppercase;              /* Texto en mayúsculas */
+        }
+        
+        /* Elementos en cursiva */
+        em, i, italic {
+            color: #a59eaa;                         /* Color morado claro */
+        }
+        
+        /* Texto grande */
+        big {
+            font-size: 15px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        /* Texto pequeño */
+        small, sup, sub {
+            font-size: 9px;
+        }
+        
+        /* ========== TÍTULOS ========== */
+        h1 {
+            font-family: "creo";                    /* Fuente personalizada */
+            padding: 5px;
+            letter-spacing: 1px;
+            padding: 0px;
+            text-align: center;
+            font-size: 24px;
+            text-transform: uppercase;              /* Mayúsculas */
+            line-height: 120%;                      /* Altura de línea */
+            color: #92879a;                         /* Color morado grisáceo */
+        }
+        
+        h2 {
+            font-family: "creo";                    /* Fuente personalizada */
+            padding: 5px;
+            letter-spacing: 1px;
+            text-align: center;
+            font-size: 28px;
+            text-transform: uppercase;              /* Mayúsculas */
+            line-height: 120%;                      /* Altura de línea */
+            color: #fdcae1;                         /* Color rosa */
+        }
+        
+        /* Título de publicaciones */
+        .posttitle {
+            font-family: "creo";                    /* Fuente personalizada */
+            padding: 5px;
+            letter-spacing: 1px;
+            text-align: center;
+            font-size: 32px;
+            text-transform: uppercase;              /* Mayúsculas */
+            line-height: 120%;                      /* Altura de línea */
+            -webkit-text-stroke: 1px #665588;       /* Contorno morado */
+            -webkit-text-fill-color: rgba(0, 0, 0, 0); /* Relleno transparente */
+        }
+        
+        /* ========== ELEMENTOS DE TEXTO ========== */
+        blockquote {
+            margin-left: 0px;
+            padding-left: 15px;
+            border-left: 1px solid #665588;         /* Borde izquierdo morado */
+            width: 95%;
+        }
+        
+        /* Espaciado */
+        .p {
+            padding-top: 5px;
+        }
+        
+        /* Listas */
+        .ol, ul {
+            margin-left: 30px;
+            padding: 5px;
+        }
+        
+        .ul {
+            list-style-type: square;                /* Viñetas cuadradas */
+        }
+        
+        /* ========== BARRAS DE DESPLAZAMIENTO ========== */
+        /* Oculta todas las barras de desplazamiento */
+        ::-webkit-scrollbar-thumb {
+            display: none;
+        }
+        
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* ========== SELECTOR DE TEXTO ========== */
+        /* Color de selección de texto (rosa) */
+        ::-moz-selection {
+            background: #fdcae1;
+        }
+        
+        ::selection {
+            background: #fdcae1;
+        }
+        
+        /* ========== CONTENEDOR PRINCIPAL ========== */
+        /* Ventana central con scroll (pero oculto) */
+        #container {
+            margin: auto;
+            left: 0px;
+            top: -100px;
+            bottom: 0px;
+            right: 0px;
+            position: absolute;
+            width: 570px;
+            height: 390px;
+            overflow: auto;                         /* Permite scroll */
+            color: #3c3c3c;
+            z-index: 999;
+            border-radius: 10px;                    /* Esquinas redondeadas */
+            background-color: #f0f0f0;              /* Fondo gris claro */
+        }
+        
+        /* ========== VENTANA IZQUIERDA ========== */
+        /* Panel izquierdo con imagen de gato */
+        #leftwindow {
+            width: 235px;
+            height: 275px;
+            padding: 0px;
+            background-color: #f5f5f5;              /* Fondo gris muy claro */
+            margin: auto;
+            position: fixed;                        /* Posición fija en pantalla */
+            left: 0px;
+            top: 230px;
+            bottom: 0px;
+            right: 300px;
+            border-radius: 15px;                    /* Esquinas redondeadas */
+            z-index: 9999;                          /* Alto z-index (encima de otros) */
+            -webkit-transition: all 0.2s linear;    /* Transición suave */
+            -moz-transition: all 0.2s linear;
+            transition: all 0.2s linear;
+        }
+        
+        /* Efecto hover: agranda la ventana */
+        #leftwindow:hover {
+            transform: scale(1.1);                  /* Escala al 110% */
+            -webkit-transition: all 0.2s linear;
+            -moz-transition: all 0.2s linear;
+            transition: all 0.2s linear;
+        }
+        
+        /* ========== VENTANA DERECHA ========== */
+        /* Panel derecho con imagen principal */
+        #rightwindow {
+            width: 250px;
+            height: 375px;
+            padding: 0px;
+            background-color: #f5f5f5;              /* Fondo gris muy claro */
+            margin: auto;
+            position: fixed;                        /* Posición fija en pantalla */
+            left: 250px;
+            top: 230px;
+            bottom: 0px;
+            right: 0px;
+            border-radius: 15px;                    /* Esquinas redondeadas */
+            -webkit-transition: all 0.2s linear;    /* Transición suave */
+            -moz-transition: all 0.2s linear;
+            transition: all 0.2s linear;
+        }
+        
+        /* Imagen dentro de la ventana derecha */
+        #rightwindow img {
+            width: 210px;
+            height: 210px;
+            border-radius: 10px;                    /* Esquinas redondeadas */
+            margin-top: 45px;
+            margin-left: 20px;
+        }
+        
+        /* Efecto hover: trae al frente */
+        #rightwindow:hover {
+            z-index: 9999;                          /* Alto z-index al pasar mouse */
+            -webkit-transition: all 0.2s linear;
+            -moz-transition: all 0.2s linear;
+            transition: all 0.2s linear;
+        }
+        
+        /* ========== ESTADÍSTICAS/TÍTULO DERECHO ========== */
+        /* Texto "M A R I A !" parpadeante */
+        #stats {
+            font-family: "creo";                    /* Fuente personalizada */
+            font-size: 14px;
+            position: fixed;
+            margin-top: 15px;
+            margin-left: 20px;
+            color: #665588;                         /* Color morado */
+            width: 210px;
+            text-align: center;
+            word-spacing: 0px;
+            overflow: hidden;
+            letter-spacing: 2.5px;                  /* Espaciado entre letras */
+            font-weight: bold;
+        }
+        
+        /* ========== ANIMACIÓN DE PARPADEO ========== */
+        /* Texto que parpadea */
+        .blinking {
+            animation: blinkingText 1.2s infinite;  /* Animación infinita */
+        }
+        
+        /* Definición de la animación de parpadeo */
+        @keyframes blinkingText {
+            0% {
+                color: #665588;                     /* Morado */
+            }
+            49% {
+                color: #665588;                     /* Morado */
+            }
+            60% {
+                color: transparent;                 /* Transparente (parpadea) */
+            }
+            99% {
+                color: transparent;                 /* Transparente */
+            }
+            100% {
+                color: #665588;                     /* Vuelve a morado */
+            }
+        }
+        
+        /* ========== IMAGEN LATERAL ========== */
+        /* Contenedor de imagen en panel izquierdo */
+        #sideimage {
+            position: fixed;
+            width: 200px;
+            height: 150px;
+            margin: 18px;
+            display: block;
+            background-color: #fdcae1;              /* Fondo rosa */
+            border-radius: 10px;                    /* Esquinas redondeadas */
+        }
+        
+        /* Imagen dentro del contenedor */
+        #sideimage img {
+            width: 200px;
+            height: 200px;
+            position: fixed;
+            margin-top: -50px;                      /* Desplazada hacia arriba */
+        }
+        
+        /* ========== DESCRIPCIÓN ========== */
+        /* Texto descriptivo debajo de la imagen */
+        .description {
+            width: 200px;
+            height: 50px;
+            line-height: 200%;                      /* Doble espacio entre líneas */
+            margin-top: 180px;
+            margin-left: 18px;
+            display: block;
+            font-size: 10px;
+            overflow: hidden;                       /* Oculta texto que se sale */
+        }
+        
+        /* ========== BARRA SUPERIOR DE VENTANAS ========== */
+        /* Barra de título estilo navegador */
+        #browserbig {
+            background-color: #665588;              /* Fondo morado */
+            padding: 5px;
+            width: auto;
+            border-radius: 15px 15px 0px 0px;       /* Solo esquinas superiores redondeadas */
+        }
+        
+        /* Puntos decorativos (simulan botones de ventana) */
+        .dots {
+            font-size: 10px;
+            margin: 5px;
+            color: #f5f5f5;                         /* Color blanco grisáceo */
+        }
+        
+        /* ========== ONDAS DECORATIVAS SVG ========== */
+        /* Primera onda (rosa sólida) */
+        .wave1fill {
+            fill: #fdcae1;                          /* Relleno rosa */
+            width: 830px;
+            height: 670px;
+        }
+        
+        /* Contenedor de la primera onda */
+        #wave1 {
+            margin: auto;
+            right: 0px;
+            top: 0px;
+            left: 0px;
+            bottom: 0px;
+            width: 830px;
+            height: 670px;
+            overflow: hidden;                       /* Oculta desbordamiento */
+            position: fixed;                        /* Posición fija */
+        }
+        
+        /* Segunda onda (contorno transparente) */
+        .wave2fill {
+            fill: transparent;                      /* Sin relleno */
+            stroke: #a59eaa;                        /* Borde morado claro */
+            stroke-width: 1.5px;                    /* Grosor del borde */
+            width: 830px;
+            height: 670px;
+        }
+        
+        /* Contenedor de la segunda onda */
+        #wave2 {
+            margin: auto;
+            right: 0px;
+            top: 0px;
+            left: 0px;
+            bottom: 0px;
+            width: 830px;
+            height: 670px;
+            overflow: hidden;                       /* Oculta desbordamiento */
+            position: fixed;                        /* Posición fija */
+            transform: rotate(5deg);                /* Rotada 5 grados */
+        }
+        
+        /* ========== TÍTULO PRINCIPAL "MARIA" ========== */
+        #maintitle {
+            font-family: "creo";                    /* Fuente personalizada */
+            font-size: 74px;                        /* Tamaño grande */
+            position: fixed;
+            margin: auto;
+            left: 0px;
+            right: 440px;
+            bottom: 0px;
+            top: -180px;
+            width: 300px;
+            height: 250px;
+            text-align: right;                      /* Alineado a la derecha */
+            word-spacing: -3px;                     /* Espaciado negativo entre palabras */
+            line-height: 100%;                      /* Altura de línea normal */
+            padding: 10px;
+            z-index: 99999999999999999999999;       /* Z-index extremadamente alto */
+            -webkit-text-stroke: 1.5px #665588;     /* Contorno morado */
+            -webkit-text-fill-color: rgba(0, 0, 0, 0); /* Relleno transparente */
+            text-shadow: 3px 3px #f5f5f5;          /* Sombra gris clara */
+        }
+        
+        /* ========== NOTIFICACIÓN FLOTANTE ========== */
+        /* Panel con avatar y mensaje */
+        #notif {
+            position: fixed;
+            top: -520px;
+            right: 0px;
+            left: 140px;
+            bottom: 0px;
+            margin: auto;
+            border-radius: 15px;                    /* Esquinas redondeadas */
+            width: 240px;
+            height: 50px;
+            padding: 10px;
+            background-color: #f5f5f5;              /* Fondo gris muy claro */
+            line-height: 150%;                      /* Espaciado entre líneas */
+            -webkit-transition: all 0.2s linear;    /* Transición suave */
+            -moz-transition: all 0.2s linear;
+            transition: all 0.2s linear;
+            z-index: 999999999999999999;            /* Z-index muy alto */
+            
+            /* Animación de flotación */
+            animation-name: floating;
+            animation-duration: 5s;
+            animation-iteration-count: infinite;    /* Se repite infinitamente */
+            animation-timing-function: ease-in-out;
+        }
+        
+        /* Definición de animación de flotación */
+        @keyframes floating {
+            from {
+                transform: translate(0, 0px);       /* Posición inicial */
+            }
+            55% {
+                transform: translate(0, 10px);      /* Se mueve 10px hacia abajo */
+            }
+            to {
+                transform: translate(0, -0px);      /* Vuelve a posición inicial */
+            }
+        }
+        
+        /* Imagen dentro de la notificación (avatar) */
+        #notif img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;                     /* Círculo perfecto */
+            float: left;                            /* Flota a la izquierda */
+            margin-right: 10px;                     /* Margen a la derecha */
+        }
+        
+        /* Enlace dentro de la notificación */
+        #notif a {
+            font-weight: bold;
+        }
+        
+        /* Efecto hover: agranda la notificación */
+        #notif:hover {
+            transform: scale(1.1);                  /* Escala al 110% */
+            -webkit-transition: all 0.2s linear;
+            -moz-transition: all 0.2s linear;
+            transition: all 0.2s linear;
+        }
+        
+        /* ========== REPRODUCTOR DE SPOTIFY ========== */
+        /* Contenedor del reproductor de música */
+        #spotify {
+            position: fixed;
+            top: -350px;
+            right: 0px;
+            left: 360px;
+            bottom: 0px;
+            margin: auto;
+            border-radius: 15px;                    /* Esquinas redondeadas */
+            width: 200px;
+            height: 68px;
+            background-color: #f5f5f5;              /* Fondo gris muy claro */
+            -webkit-transition: all 0.2s linear;    /* Transición suave */
+            -moz-transition: all 0.2s linear;
+            transition: all 0.2s linear;
+            z-index: 999999999999999999;            /* Z-index muy alto */
+        }
+        
+        /* Efecto hover: agranda el reproductor */
+        #spotify:hover {
+            transform: scale(1.1);                  /* Escala al 110% */
+            -webkit-transition: all 0.2s linear;
+            -moz-transition: all 0.2s linear;
+            transition: all 0.2s linear;
+        }
+        
+        /* ========== ESTILOS DEL REPRODUCTOR PERSONALIZADO ========== */
+        /* Reproductor circular "glenplayer07" */
+        #glenplayer07 {
+            position: absolute;
+            margin-top: 10px;
+            margin-left: 10px;
+            z-index: 99;
+        }
+        
+        /* Contenedor principal del reproductor */
+        .flamingo {
+            display: flex;                          /* Usa flexbox */
+            align-items: center;                    /* Centra verticalmente */
+        }
+        
+        /* Círculo exterior del reproductor */
+        .circleofdeath {
+            width: var(--Circle-Size);              /* Usa variable CSS */
+            height: var(--Circle-Size);
+            border-radius: 100%;                    /* Círculo perfecto */
+            overflow: hidden;                       /* Oculta desbordamiento */
+        }
+        
+        /* Fondo del círculo del progreso */
+        .tinfoil {
+            width: var(--Circle-Size);
+            height: var(--Circle-Size);
+            background: var(--Progress-Empty);      /* Color del círculo vacío */
+            border-radius: 100%;                    /* Círculo perfecto */
+        }
+        
+        /* Barra de progreso */
+        .oven {
+            background: var(--Progress-Fill);       /* Color del progreso */
+        }
+        
+        /* Contenedor interno */
+        .oliveoil {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Capa para los controles */
+        .crust {
+            position: absolute;
+            top: 0;
+            display: flex;
+            align-items: center;                    /* Centra verticalmente */
+            justify-content: center;                /* Centra horizontalmente */
+            width: var(--Circle-Size);
+            height: var(--Circle-Size);
+        }
+        
+        /* Botón circular central */
+        .cherry {
+            display: flex;
+            align-items: center;                    /* Centra verticalmente */
+            justify-content: center;                /* Centra horizontalmente */
+            width: calc(var(--Circle-Size) - (var(--Progress-Border-Size) * 2));
+            height: calc(var(--Circle-Size) - (var(--Progress-Border-Size) * 2));
+            background: var(--Player-Background);   /* Fondo rosa */
+            border-radius: 100%;                    /* Círculo perfecto */
+            cursor: pointer;                        /* Cursor de mano */
+            z-index: 1;                             /* Encima de otras capas */
+        }
+        
+        /* Iconos de controles de música */
+        .music-controls .material-icons {
+            font-size: var(--Play-Pause-Buttons-Size); /* Tamaño de iconos */
+            color: var(--Play-Pause-Buttons-Color);    /* Color blanco */
+        }
+        
+        /* Botón de pausa oculto inicialmente */
+        .pausee {
+            display: none;
+        }
+        
+        /* Clases para mostrar/ocultar controles */
+        .beff {
+            display: none;
+        }
+        
+        .aff {
+            display: block;
+        }
+        
+        /* Información de la música */
+        .music-info {
+            margin-left: var(--Player-Text-Margin); /* Margen desde variable */
+            line-height: 1em;                       /* Altura de línea normal */
+        }
+        
+        /* Nombre de la canción */
+        .song-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: var(--Song-Name-Font-Size);  /* Tamaño desde variable */
+            text-transform: uppercase;              /* Mayúsculas */
+            font-weight: bold;
+            color: #92879a;                         /* Color morado grisáceo */
+            color: var(--Song-Name-Color);          /* Color desde variable (sobrescribe) */
+        }
+        
+        /* Nombre del artista */
+        .artist-name {
+            margin-top: 3px;                        /* Margen superior */
+            font-family: 'Montserrat', sans-serif;
+            font-size: var(--Artist-Name-Font-Size); /* Tamaño desde variable */
+            letter-spacing: 0.3px;                  /* Pequeño espaciado */
+            color: var(--Artist-Name-Color);        /* Color desde variable */
+        }
+        
+        /* ========== BARRA DECORATIVA INFERIOR ========== */
+        #bar {
+            position: fixed;
+            top: 585px;
+            bottom: 0px;
+            right: 0px;
+            left: 0px;
+            margin: auto;
+            width: 220px;
+            height: 15px;
+            border-radius: 8px;                     /* Esquinas redondeadas */
+            background-color: #e5e5e5;              /* Gris claro */
+            z-index: 9999999999999999999999999999999; /* Z-index extremadamente alto */
+        }
+        
+        /* ========== ENLACES LATERALES ========== */
+        /* Panel de enlaces sociales (vacío en este código) */
+        #sidelink {
+            position: fixed;
+            width: 280px;
+            height: 100px;
+            margin-left: 15px;
+            margin-top: 15px;
+            z-index: 999999999999999999999999999;   /* Z-index muy alto */
+            text-align: left;                       /* Alineado a la izquierda */
+        }
+        
+        /* Iconos circulares de enlaces */
+        #sidelink span {
+            width: 25px;
+            height: 25px;
+            border-radius: 15px;                    /* Círculo */
+            background-color: #665588;              /* Fondo morado */
+            color: #f5f5f5;                         /* Texto blanco grisáceo */
+            font-size: 25px;                        /* Tamaño grande */
+            float: left;                            /* Flota a la izquierda */
+            padding: 10px;                          /* Relleno interno */
+            text-align: center;                     /* Texto centrado */
+            margin: 5px;                            /* Margen externo */
+        }
+        
+        /* Efecto hover en iconos */
+        #sidelink a:hover span {
+            transform: scale(1.2);                  /* Escala al 120% */
+            -webkit-transition: all 0.2s linear;
+            -moz-transition: all 0.2s linear;
+            transition: all 0.2s linear;
+        }
+        
+        /* ========== CRÉDITOS ========== */
+        /* Enlace de créditos en esquina inferior derecha */
+        #credits {
+            position: fixed;
+            bottom: 10px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            text-align: center;                     /* Centrado horizontal */
+        }
+        
+        /* Enlace circular de créditos */
+        #credits a {
+            font-weight: bold;
+            font-family: "creo";                    /* Fuente personalizada */
+            width: 36px;
+            height: 36px;
+            padding: 0px;
+            display: inline-block;                  /* Permite dimensiones */
+            -webkit-text-fill-color: #f5f5f5;       /* Texto blanco grisáceo */
+            background-color: #fdcae1;              /* Fondo rosa */
+            font-size: 18px;                        /* Tamaño medio */
+            border-radius: 50%;                     /* Círculo perfecto */
+        }
+        
+        /* Icono dentro del enlace */
+        #credits span {
+            padding: 5px;
+            padding-top: 10px;
+            padding-right: 5px;
+        }
+        
+        /* Efecto hover en créditos */
+        #credits a:hover {
+            font-family: "creo";                    /* Mantiene fuente personalizada */
+        }
+        
+        /* ========== ANIMACIÓN DE PULSO ========== */
+        /* Clase para animación de pulso */
+        .pulse a:hover {
+            animation: pulse 1s infinite;           /* Animación infinita */
+            animation-timing-function: linear;      /* Timing lineal */
+        }
+        
+        /* Definición de animación de pulso */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);                /* Tamaño normal */
+            }
+            50% {
+                transform: scale(1.3);              /* Agranda al 130% */
+            }
+            100% {
+                transform: scale(1);                /* Vuelve a tamaño normal */
+            }
+        }
+    </style>
+</head>
 
+<body>
+    <!-- ========== TÍTULO PRINCIPAL ========== -->
+    <div id="maintitle">
+        Inori ❤︎
+    </div>
+
+    <!-- ========== ONDAS DECORATIVAS ========== -->
+    <!-- Primera onda (rosa sólida) -->
+    <div id="wave1">
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 848.17 682.02" xml:space="preserve" class="wave1fill">
+            <path class="cls-1" d="M2.09,341.32s13-78,68.78-109.52c40.65-23,87.23-36.22,131.83-52.65s72.26-39.74,95.73-77.4c9.13-14.66,16.9-36.89,26.62-51.24C354.39,7.16,434.36-4,489.11,9.18S587.65,61,614,105.84c18.86,32,29.92,67.21,45.45,100.64s36.7,66.32,70,86.91c23.77,14.69,52.64,22.43,74.5,39.32,36.85,28.49,45.66,76.19,46.06,119.73.33,35.18-3.55,71.3-20.78,102.93-19.29,35.41-53.68,63-92.07,82.39-110.55,55.72-258.74,52-362.63,43-64.37-5.52-128.27-7.39-188.23-29S71.19,593.93,39.66,543.48c-37.75-60.4-38.4-133-37.57-202.16" transform="translate(-1.91 -3.99)"/>
+        </svg>
+    </div>
+
+    <!-- Segunda onda (contorno) -->
+    <div id="wave2">
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 848.17 682.02" xml:space="preserve" class="wave2fill">
+            <path class="cls-1" d="M2.09,341.32s13-78,68.78-109.52c40.65-23,87.23-36.22,131.83-52.65s72.26-39.74,95.73-77.4c9.13-14.66,16.9-36.89,26.62-51.24C354.39,7.16,434.36-4,489.11,9.18S587.65,61,614,105.84c18.86,32,29.92,67.21,45.45,100.64s36.7,66.32,70,86.91c23.77,14.69,52.64,22.43,74.5,39.32,36.85,28.49,45.66,76.19,46.06,119.73.33,35.18-3.55,71.3-20.78,102.93-19.29,35.41-53.68,63-92.07,82.39-110.55,55.72-258.74,52-362.63,43-64.37-5.52-128.27-7.39-188.23-29S71.19,593.93,39.66,543.48c-37.75-60.4-38.4-133-37.57-202.16" transform="translate(-1.91 -3.99)"/>
+        </svg>
+    </div>
+
+    <!-- ========== NOTIFICACIÓN ========== -->
+    <!-- Panel con avatar y mensaje de usuario -->
+    <div id="notif">
+        <!-- Avatar del usuario -->
+        <img src="assets/1.jpg" draggable="false" alt="Avatar de Inori">
+        <!-- Nombre de usuario y mensaje -->
+        <b>@ Inori (666)</b><br/>
+        ~ <a>Amo</a>rosa<span class="th th-heart-1-o"></span>
+    </div>
+
+    <!-- ========== REPRODUCTOR DE MÚSICA ========== -->
+    <div id="spotify">
+        <!-- Reproductor circular personalizado -->
+        <div id="glenplayer07">
+            <div class="flamingo">
+                <!-- Círculo del reproductor -->
+                <div class="circleofdeath">
+                    <div class="tinfoil">
+                        <div class="oliveoil"></div>
+                    </div>
+                    <!-- Botón central play/pause -->
+                    <div class="crust">
+                        <div class="cherry">
+                            <div class="music-controls">
+                                <!-- Icono de play (visible inicialmente) -->
+                                <i class="material-icons playy">play_arrow</i>
+                                <!-- Icono de pause (oculto inicialmente) -->
+                                <i class="material-icons pausee">pause</i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Información de la canción -->
+                <div class="music-info">
+                    <div class="song-name">Perfect Two ♫</div>
+                    <div class="artist-name">Auburn ~</div>
+                </div>
+            </div>
+        </div>
+        <!-- Elemento de audio con la canción -->
+        <audio id="audio" src="assets/ptwo.mp3" type="audio"></audio>
+    </div>
+
+    <!-- ========== VENTANA IZQUIERDA ========== -->
+    <div id="leftwindow">
+        <!-- Barra superior estilo navegador -->
+        <div id="browserbig">
+            <div class="dots">
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+            </div>
+        </div>
+        <!-- Imagen PNG -->
+        <div id="sideimage">
+            <img src="assets/2.png" draggable="false" alt="Imagen de gato">
+        </div>
+        <!-- Descripción y contador de visitas -->
+        <div class="description">
+            ~ <b>Inori</b><br> 
+            ١٥٧٤♡ • Girl
+            
+            <!-- Script para contador de visitas -->
+            <script language="JavaScript">
+                var fhs = document.createElement('script');
+                var fhs_id = "5630069";
+                var ref = ('' + document.referrer + '');
+                var pn = window.location;
+                var w_h = window.screen.width + " x " + window.screen.height;
+                fhs.src = "//freehostedscripts.net/ocounter.php?site=" + fhs_id + "&e1=%&e2=%&r=" + ref + "&wh=" + w_h + "&a=1&pn=" + pn + "";
+                document.head.appendChild(fhs);
+                document.write("<span id='o_" + fhs_id + "'></span>");
+            </script>
+        </div>
+    </div>
+
+    <!-- ========== VENTANA DERECHA ========== -->
+    <div id="rightwindow">
+        <!-- Barra superior estilo navegador -->
+        <div id="browserbig">
+            <div class="dots">
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+            </div>
+        </div>
+        <!-- Título parpadeante -->
+        <div id="stats">
+            <span class="blinking">I N O R I ❥</span>
+        </div>
+        <!-- Imagen principal -->
+        <img src="assets/3.jpg" draggable="false" alt="Imagen principal de Inori">
+        <!-- Panel de enlaces sociales -->
+        <div id="sidelink">
+    <a href="https://instagram.com/inorichan" target="_blank" title="Instagram">
+        <span class="material-icons">photo_camera</span>
+    </a>
+    <a href="https://twitter.com/inoritv" target="_blank" title="Twitter/X">
+        <span class="material-icons">flutter_dash</span>
+    </a>
+    <a href="https://tiktok.com/@inori_chan" target="_blank" title="TikTok">
+        <span class="material-icons">music_note</span>
+    </a>
+    <a href="mailto:inorichan1990@email.com" title="Enviar email">
+        <span class="material-icons">email</span>
+    </a>
+</div>
+    </div>
+
+    <!-- ========== BARRA DECORATIVA INFERIOR ========== -->
+    
+
+    <!-- ========== CRÉDITOS ========== -->
+    <!-- Enlace circular en esquina inferior derecha -->
+    <div id="credits">
+        <div class="pulse">
+            <a target="_blank" href="https://xat.me/" title="Morrito">
+                <span class="th th-heart-1-o"></span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
